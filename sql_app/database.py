@@ -1,12 +1,17 @@
 import os
 
 from dotenv import load_dotenv
-from sqlalchemy import create_engine, MetaData, event, inspect
-from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
-from sqlalchemy.orm import DeclarativeBase, sessionmaker
 
+from sqlalchemy import MetaData, event, inspect
+from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
+from sqlalchemy.orm import DeclarativeBase
 
 load_dotenv(".envs/.env_db")
+
+SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_URL")
+
+engine = create_async_engine(SQLALCHEMY_DATABASE_URL)
+Session = async_sessionmaker(engine, expire_on_commit=False)
 
 
 class Model(DeclarativeBase):
@@ -19,20 +24,6 @@ class Model(DeclarativeBase):
             "pk": "pk_%(table_name)s",
         }
     )
-
-
-#########################
-# NOT ASYNC APPLICATION #
-#########################
-# print('Database URL:', os.getenv('DATABASE_URL'))
-# engine = create_engine(os.getenv("DATABASE_URL"), echo=True)
-# Session = sessionmaker(engine)
-
-#####################
-# ASYNC APPLICATION #
-#####################
-engine = create_async_engine(os.getenv("DATABASE_URL"))
-Session = async_sessionmaker(engine, expire_on_commit=False)
 
 
 @event.listens_for(Model, "init", propagate=True)

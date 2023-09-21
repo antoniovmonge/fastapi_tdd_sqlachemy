@@ -2,10 +2,11 @@ from datetime import datetime
 from uuid import UUID, uuid4
 from typing import Optional
 
-from sqlalchemy import String, ForeignKey, Table, Column, Text
+from sqlalchemy import Column, ForeignKey, String, Table, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship, WriteOnlyMapped
 
-from db import Model
+from .database import Model
+
 
 ProductCountry = Table(
     "products_countries",
