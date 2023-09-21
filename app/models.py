@@ -5,7 +5,7 @@ from typing import Optional
 from sqlalchemy import Column, ForeignKey, String, Table, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship, WriteOnlyMapped
 
-from .database import Model
+from app.database import Model
 
 
 ProductCountry = Table(

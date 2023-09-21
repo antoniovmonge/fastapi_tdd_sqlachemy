@@ -2,16 +2,16 @@ import asyncio
 import csv
 from datetime import datetime
 from sqlalchemy import select, delete
-from sql_app.database import Session
-from sql_app.models import Product, Customer, ProductReview
+from app.database import SessionLocal
+from app.models import Product, Customer, ProductReview
 
 
 async def main():
-    async with Session() as session:
+    async with SessionLocal() as session:
         async with session.begin():
             await session.execute(delete(ProductReview))
 
-    async with Session() as session:
+    async with SessionLocal() as session:
         async with session.begin():
             with open("data/reviews.csv") as f:
                 reader = csv.DictReader(f)
