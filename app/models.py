@@ -1,146 +1,74 @@
 from datetime import datetime
-from uuid import UUID, uuid4
-from typing import Optional
+from uuid import uuid4
 
-from sqlalchemy import Column, ForeignKey, String, Table, Text
-from sqlalchemy.orm import Mapped, mapped_column, relationship, WriteOnlyMapped
+from sqlalchemy import Column, DateTime, String
+from sqlalchemy.sql import expression as sql
 
-from app.database import Model
-
-
-ProductCountry = Table(
-    "products_countries",
-    Model.metadata,
-    Column("product_id", ForeignKey("products.id"), primary_key=True, nullable=False),
-    Column("country_id", ForeignKey("countries.id"), primary_key=True, nullable=False),
-)
+from app.database import Base
 
 
-class Product(Model):
-    __tablename__ = "products"
-
-    id: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[str] = mapped_column(String(64), index=True, unique=True)
-    manufacturer_id: Mapped[int] = mapped_column(
-        ForeignKey("manufacturers.id"), index=True
-    )
-    year: Mapped[int] = mapped_column(index=True)
-    cpu: Mapped[Optional[str]] = mapped_column(String(32))
-
-    # relationships
-    manufacturer: Mapped["Manufacturer"] = relationship(
-        lazy="joined",      # <= async
-        innerjoin=True,     # <= async
-        back_populates="products"
-    )
-    countries: Mapped[list["Country"]] = relationship(
-        lazy='selectin',    # <= async
-        secondary=ProductCountry, back_populates="products"
-    )
-    order_items: WriteOnlyMapped["OrderItem"] = relationship(back_populates="product")
-    reviews: WriteOnlyMapped["ProductReview"] = relationship(back_populates="product")
+class User(Base):
+    __tablename__ = "users"
+    id = Column(String, primary_key=True)
+    full_name = Column(String)
+    created_at = Column(DateTime, index=True, default=datetime.utcnow)
 
     def __repr__(self):
-        return f"Product({self.id}, '{self.name}')"
+        return (
+            f"<{self.__class__.__name__}("
+            f"id={self.id}, "
+            f"full_name={self.full_name}, "
+            f")>"
+        )
 
+    @classmethod
+    async def create(cls, db, **kwargs) -> "User":
+        query = (
+            sql.insert(cls)
+            .values(id=str(uuid4()), **kwargs)
+            .returning(cls.id, cls.full_name)
+        )
+        users = await db.execute(query)
+        await db.commit()
+        return users.first()
 
-class Country(Model):
-    __tablename__ = "countries"
+    @classmethod
+    async def update(cls, db, id, **kwargs) -> "User":
+        query = (
+            sql.update(cls)
+            .where(cls.id == id)
+            .values(**kwargs)
+            .execution_options(synchronize_session="fetch")
+            .returning(cls.id, cls.full_name)
+        )
+        users = await db.execute(query)
+        await db.commit()
+        return users.first()
 
-    id: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[str] = mapped_column(String(32), index=True, unique=True)
+    @classmethod
+    async def get(cls, db, id) -> "User":
+        query = sql.select(cls).where(cls.id == id)
+        users = await db.execute(query)
+        (user,) = users.first()
+        return user
 
-    products: Mapped[list["Product"]] = relationship(
-        lazy='selectin',    # <= async
-        secondary=ProductCountry,
-        back_populates="countries"
-    )
+    @classmethod
+    async def get_all(cls, db) -> list["User"]:
+        query = sql.select(cls)
+        users = await db.execute(query)
+        users = users.scalars().all()
+        return users
 
-    def __repr__(self):
-        return f"Country({self.id}, '{self.name}')"
-
-
-class Manufacturer(Model):
-    __tablename__ = "manufacturers"
-
-    id: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[str] = mapped_column(String(64), index=True, unique=True)
-
-    # relationships
-    products: Mapped[list["Product"]] = relationship(
-        lazy='selectin',    # <= async
-        cascade="all, delete-orphan",
-        back_populates="manufacturer"
-    )
-
-    def __repr__(self):
-        return f"Manufacturer({self.id}, '{self.name}')"
-
-
-class Order(Model):
-    __tablename__ = "orders"
-
-    id: Mapped[UUID] = mapped_column(default=uuid4, primary_key=True)
-    timestamp: Mapped[datetime] = mapped_column(default=datetime.utcnow, index=True)
-    customer_id: Mapped[UUID] = mapped_column(ForeignKey("customers.id"), index=True)
-
-    customer: Mapped["Customer"] = relationship(back_populates="orders")
-    order_items: Mapped[list["OrderItem"]] = relationship(back_populates="order")
-
-    def __repr__(self):
-        return f"Order({self.id.hex})"
-
-
-class Customer(Model):
-    __tablename__ = "customers"
-
-    id: Mapped[UUID] = mapped_column(default=uuid4, primary_key=True)
-    name: Mapped[str] = mapped_column(String(64), index=True, unique=True)
-    address: Mapped[Optional[str]] = mapped_column(String(128))
-    phone: Mapped[Optional[str]] = mapped_column(String(32))
-
-    orders: WriteOnlyMapped["Order"] = relationship(back_populates="customer")
-    product_reviews: WriteOnlyMapped["ProductReview"] = relationship(
-        back_populates="customer"
-    )
-
-    def __repr__(self):
-        return f'Customer({self.id.hex}, "{self.name}")'
-
-
-class OrderItem(Model):
-    __tablename__ = "orders_items"
-
-    product_id: Mapped[int] = mapped_column(ForeignKey("products.id"), primary_key=True)
-    order_id: Mapped[UUID] = mapped_column(ForeignKey("orders.id"), primary_key=True)
-    unit_price: Mapped[float]
-    quantity: Mapped[int]
-
-    product: Mapped["Product"] = relationship(
-        lazy="joined",      # <= async
-        innerjoin=True,     # <= async
-        back_populates="order_items")
-    order: Mapped["Order"] = relationship(back_populates="order_items")
-
-
-class ProductReview(Model):
-    __tablename__ = "products_reviews"
-
-    product_id: Mapped[int] = mapped_column(ForeignKey("products.id"), primary_key=True)
-    customer_id: Mapped[UUID] = mapped_column(
-        ForeignKey("customers.id"), primary_key=True
-    )
-    timestamp: Mapped[datetime] = mapped_column(default=datetime.utcnow, index=True)
-    rating: Mapped[int]
-    comment: Mapped[Optional[str]] = mapped_column(Text)
-
-    product: Mapped["Product"] = relationship(
-        lazy='joined',
-        innerjoin=True,
-        back_populates="reviews"
-    )
-    customer: Mapped["Customer"] = relationship(
-        lazy='joined',
-        innerjoin=True,
-        back_populates="product_reviews"
-    )
+    @classmethod
+    async def delete(cls, db, id) -> bool:
+        query = (
+            sql.delete(cls)
+            .where(cls.id == id)
+            .returning(
+                cls.id,
+                cls.full_name,
+            )
+        )
+        await db.execute(query)
+        await db.commit()
+        return True

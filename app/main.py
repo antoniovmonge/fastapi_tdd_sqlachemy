@@ -1,27 +1,34 @@
-from fastapi import FastAPI, Depends, HTTPException
-from sqlalchemy.orm import Session
+from fastapi import FastAPI
+import logging
 
-from app import crud, models, schemas
-from app.database import SessionLocal, engine
+from app.config import config
+from app.database import db
 
-# models.Model.metadata.create_all(bind=engine)
+logger = logging.getLogger(__name__)
 
-app = FastAPI()
+def init_app():
+    app = FastAPI(
+        title="Users App",
+        description="Handling Our User",
+        version="1",
+    )
 
-async def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+    @app.on_event("startup")
+    def startup():
+        db.connect(config.DB_CONFIG)
 
-@app.get("/")
-async def root():
-    return {"message": "Hello World"}
+    @app.on_event("shutdown")
+    async def shutdown():
+        await db.disconnect()
 
-@app.get("/product/{product_id}", response_model=schemas.Product)
-async def read_product(product_id: int, db: Session = Depends(get_db)):
-    db_product = crud.get_product(db, product_id=product_id)
-    if product_id is None:
-        raise HTTPException(status_code=404, detail="Product not found")
-    return db_product
+    from app.api import router_users
+
+    app.include_router(
+        router_users,
+        prefix="/api/v1",
+    )
+
+    return app
+
+
+app = init_app()

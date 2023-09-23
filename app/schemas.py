@@ -1,15 +1,19 @@
+from typing import List
+
+# from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 
-class ProductBase(BaseModel):
-    name: str
-    year: int
-    cpu: str | None = None
+# from models import User
+# from app.database import db
 
-class ProductCreate(ProductBase):
-    pass
 
-class Product(ProductBase):
-    id: int
+class UserSchema(BaseModel):
+    full_name: str
+
+
+class UserSerializer(BaseModel):
+    id: str
+    full_name: str
 
     class Config:
         from_attributes = True
