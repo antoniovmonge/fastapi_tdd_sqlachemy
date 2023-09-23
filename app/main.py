@@ -15,7 +15,7 @@ def init_app():
 
     @app.on_event("startup")
     def startup():
-        db.connect(config.DB_CONFIG)
+        db.connect(config.SQLALCHEMY_DATABASE_URL)
 
     @app.on_event("shutdown")
     async def shutdown():
