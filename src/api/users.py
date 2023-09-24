@@ -7,9 +7,7 @@ from src.database import db
 from src.schemas import UserSchema, UserSerializer
 
 
-router = APIRouter(
-    prefix="/users",
-)
+router = APIRouter()
 
 
 @router.post("/")
