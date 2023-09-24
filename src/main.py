@@ -21,10 +21,10 @@ def init_app():
     async def shutdown():
         await db.disconnect()
 
-    from src.api import router_users
+    from src import api
 
     app.include_router(
-        router_users,
+        api.router_users,
         prefix="/api/v1",
     )
 
@@ -32,3 +32,13 @@ def init_app():
 
 
 app = init_app()
+
+@app.get("/")
+async def root():
+    return {"message": "Hello World"}
+
+@app.get("/ping")
+async def pong():
+    return {
+        "ping": "pong!",
+    }
