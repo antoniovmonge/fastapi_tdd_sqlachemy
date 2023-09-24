@@ -1,8 +1,8 @@
 import asyncio
 import csv
 from sqlalchemy import delete
-from app.database import SessionLocal
-from app.models import Product, Manufacturer, Country, ProductCountry
+from src.database import SessionLocal
+from src.models import Product, Manufacturer, Country, ProductCountry
 
 
 async def main():

@@ -4,7 +4,7 @@ from uuid import uuid4
 from sqlalchemy import Column, DateTime, String
 from sqlalchemy.sql import expression as sql
 
-from app.database import Base
+from src.database import Base
 
 
 class User(Base):

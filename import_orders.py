@@ -2,8 +2,8 @@ import asyncio
 import csv
 from datetime import datetime
 from sqlalchemy import select, delete
-from app.database import SessionLocal
-from app.models import Product, Customer, Order, OrderItem
+from src.database import SessionLocal
+from src.models import Product, Customer, Order, OrderItem
 
 
 async def main():

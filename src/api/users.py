@@ -2,9 +2,9 @@ from typing import List
 
 from fastapi import APIRouter, Depends
 
-from app.models import User
-from app.database import db
-from app.schemas import UserSchema, UserSerializer
+from src.models import User
+from src.database import db
+from src.schemas import UserSchema, UserSerializer
 
 
 router = APIRouter(

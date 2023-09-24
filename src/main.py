@@ -1,8 +1,8 @@
 from fastapi import FastAPI
 import logging
 
-from app.config import config
-from app.database import db
+from src.config import config
+from src.database import db
 
 logger = logging.getLogger(__name__)
 
@@ -21,7 +21,7 @@ def init_app():
     async def shutdown():
         await db.disconnect()
 
-    from app.api import router_users
+    from src.api import router_users
 
     app.include_router(
         router_users,

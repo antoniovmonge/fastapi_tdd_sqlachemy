@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 
 
-from app import models, schemas
+from src import models, schemas
 
 
 async def get_product(db: Session, product_id: int):

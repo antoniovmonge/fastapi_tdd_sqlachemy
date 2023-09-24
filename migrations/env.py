@@ -23,9 +23,9 @@ if config.config_file_name is not None:
 # UPDATED HERE #
 ################
 
-import app.models
+import src.models
 
-target_metadata = app.models.Base.metadata
+target_metadata = src.models.Base.metadata
 
 ################
 
@@ -38,7 +38,7 @@ target_metadata = app.models.Base.metadata
 # UPDATED HERE #
 ################
 
-from app.config import Config
+from src.config import Config
 
 config.set_main_option("sqlalchemy.url", Config.SQLALCHEMY_DATABASE_URL)
 
