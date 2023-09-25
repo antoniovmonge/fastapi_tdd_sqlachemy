@@ -12,7 +12,7 @@ class Database:
 
     def connect(self, db_config):
         self.__engine = create_async_engine(
-            config.SQLALCHEMY_DATABASE_URI,
+            config.SQLALCHEMY_DATABASE_URL,
         )
 
         self.__session = async_sessionmaker(
