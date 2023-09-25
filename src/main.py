@@ -32,13 +32,3 @@ def init_app():
 
 
 app = init_app()
-
-@app.get("/")
-async def root():
-    return {"message": "Hello World"}
-
-# @app.get("/ping")
-# async def pong():
-#     return {
-#         "ping": "pong!",
-#     }

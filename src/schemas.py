@@ -8,12 +8,12 @@ from pydantic import BaseModel
 
 
 class UserSchema(BaseModel):
-    full_name: str
+    name: str
 
 
 class UserSerializer(BaseModel):
     id: str
-    full_name: str
+    name: str
 
     class Config:
         from_attributes = True

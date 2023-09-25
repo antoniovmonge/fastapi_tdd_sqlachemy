@@ -1,11 +1,9 @@
 import os
 
-from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
-from sqlalchemy.orm import declarative_base
-
 from src.config import config
 
-Base = declarative_base()
+from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
+from sqlalchemy.orm import declarative_base
 
 class Database:
     def __init__(self):

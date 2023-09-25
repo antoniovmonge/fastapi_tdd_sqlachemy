@@ -4,20 +4,21 @@ from uuid import uuid4
 from sqlalchemy import Column, DateTime, String
 from sqlalchemy.sql import expression as sql
 
-from src.database import Base
+from src.models.base import Base
 
 
 class User(Base):
     __tablename__ = "users"
     id = Column(String, primary_key=True)
-    full_name = Column(String)
+    name = Column(String)
+    email = Column(String, unique=True)
     created_at = Column(DateTime, index=True, default=datetime.utcnow)
 
     def __repr__(self):
         return (
             f"<{self.__class__.__name__}("
             f"id={self.id}, "
-            f"full_name={self.full_name}, "
+            f"name={self.name}, "
             f")>"
         )
 
@@ -26,7 +27,7 @@ class User(Base):
         query = (
             sql.insert(cls)
             .values(id=str(uuid4()), **kwargs)
-            .returning(cls.id, cls.full_name)
+            .returning(cls.id, cls.name)
         )
         users = await db.execute(query)
         await db.commit()
@@ -39,7 +40,7 @@ class User(Base):
             .where(cls.id == id)
             .values(**kwargs)
             .execution_options(synchronize_session="fetch")
-            .returning(cls.id, cls.full_name)
+            .returning(cls.id, cls.name)
         )
         users = await db.execute(query)
         await db.commit()
@@ -66,7 +67,7 @@ class User(Base):
             .where(cls.id == id)
             .returning(
                 cls.id,
-                cls.full_name,
+                cls.name,
             )
         )
         await db.execute(query)

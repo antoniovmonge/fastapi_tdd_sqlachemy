@@ -23,9 +23,10 @@ if config.config_file_name is not None:
 # UPDATED HERE #
 ################
 
-import src.database
+# from src.models import User
+import src.models
 
-target_metadata = src.database.Base.metadata
+target_metadata = src.models.Base.metadata
 
 ################
 
