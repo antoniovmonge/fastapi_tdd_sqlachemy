@@ -1,5 +1,6 @@
 import json
 
+
 def test_create_user(test_app_with_db):
     response = test_app_with_db.post(
         "/api/v1/users/", content=json.dumps({"name": "Mr.Test"})
@@ -24,3 +25,22 @@ def test_create_user_invalid_json(test_app_with_db):
             }
         ]
     }
+
+
+def test_get_user(test_app_with_db):
+    # create a user for this test
+    response = test_app_with_db.post(
+        "/api/v1/users/",
+        content=json.dumps({"name": "Blas"}),
+    )
+
+    # get the user_id from the response
+    user_id = response.json()["id"]
+
+    response = test_app_with_db.get(f"/api/v1/users/{user_id}/")
+    assert response.status_code == 200
+
+    response_dict = response.json()
+
+    assert response_dict["id"] == user_id
+    assert response_dict["name"] == "Blas"
