@@ -28,7 +28,7 @@ def test_create_user_invalid_json(test_app_with_db):
 
 
 def test_get_user(test_app_with_db):
-    # create a user for this test
+    # create a user for this test and store it in the response variable
     response = test_app_with_db.post(
         "/api/v1/users/",
         content=json.dumps({"name": "Blas"}),
