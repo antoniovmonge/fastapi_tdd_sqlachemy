@@ -3,7 +3,7 @@ import os
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 from sqlalchemy.orm import declarative_base
 
-from src.config import config
+from src.config import settings
 
 Base = declarative_base()
 
@@ -14,7 +14,7 @@ class Database:
 
     def connect(self, db_config):
         self.__engine = create_async_engine(
-            config.SQLALCHEMY_DATABASE_URL,
+            settings.sql_alchemy_database_url,
         )
 
         self.__session = async_sessionmaker(

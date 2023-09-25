@@ -10,7 +10,7 @@ from src.schemas import UserSchema, UserSerializer
 router = APIRouter()
 
 
-@router.post("/")
+@router.post("/", status_code=201)
 async def create_user(
     user: UserSchema, db_session=Depends(db.get_db)
 ) -> UserSerializer:
