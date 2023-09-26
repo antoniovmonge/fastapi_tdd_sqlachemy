@@ -1,6 +1,6 @@
 import os
 
-from src.config import config
+from src.config import settings
 
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 from sqlalchemy.orm import declarative_base
@@ -12,7 +12,7 @@ class Database:
 
     def connect(self, db_config):
         self.__engine = create_async_engine(
-            config.SQLALCHEMY_DATABASE_URL,
+            settings.SQLALCHEMY_DATABASE_URL,
         )
 
         self.__session = async_sessionmaker(

@@ -1,5 +1,7 @@
 # Alembic
 
+## Sync
+
 ```bash
 alembic init migrations
 ```

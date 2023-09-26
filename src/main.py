@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 import logging
 
-from src.config import config
+from src.config import settings
 from src.database import db
 
 logger = logging.getLogger(__name__)
@@ -15,7 +15,7 @@ def init_app():
 
     @app.on_event("startup")
     def startup():
-        db.connect(config.SQLALCHEMY_DATABASE_URL)
+        db.connect(settings.SQLALCHEMY_DATABASE_URL)
 
     @app.on_event("shutdown")
     async def shutdown():

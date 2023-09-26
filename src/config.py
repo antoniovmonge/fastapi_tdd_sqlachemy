@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 load_dotenv(".envs/.env_db")
 
 
-class Config:
+class Settings:
     DB_USER = os.getenv("DB_USER", "postgres")
     DB_PASSWORD = os.getenv("DB_PASSWORD", "postgres")
     DB_HOST = os.getenv("DB_HOST", "localhost:5555")
@@ -14,4 +14,4 @@ class Config:
     SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_URL")
 
 
-config = Config
+settings = Settings

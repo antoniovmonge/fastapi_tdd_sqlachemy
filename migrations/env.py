@@ -39,9 +39,9 @@ target_metadata = src.models.Base.metadata
 # UPDATED HERE #
 ################
 
-from src.config import Settings
+from src.config import settings
 
-config.set_main_option("sqlalchemy.url", config.sql_alchemy_database_url)
+config.set_main_option("sqlalchemy.url", settings.SQLALCHEMY_DATABASE_URL)
 
 ################
 
