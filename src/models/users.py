@@ -44,7 +44,10 @@ class User(Base):
         )
         users = await db.execute(query)
         await db.commit()
-        return users.first()
+        user = users.first()
+        if user is None:
+            return None
+        return user
 
     @classmethod
     async def get(cls, db, id) -> Optional["User"]:

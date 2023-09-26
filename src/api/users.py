@@ -37,6 +37,8 @@ async def update(
     id: str, user: UserSchema, db_session=Depends(db.get_db)
 ) -> UserSerializer:
     user = await User.update(db_session, id, **user.model_dump())
+    if user is None:
+        raise HTTPException(status_code=404, detail="User not found")
     return user
 
 

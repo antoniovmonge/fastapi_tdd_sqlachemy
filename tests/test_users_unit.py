@@ -99,3 +99,30 @@ def test_remove_user_incorrect_id(test_app_with_db):
     )
     assert response.status_code == 404
     assert response.json()["detail"] == "User not found"
+
+
+# UPDATE USER TESTS
+
+
+def test_update_user(test_app_with_db):
+    response = test_app_with_db.post(
+        "/api/v1/users/",
+        content=json.dumps({"name": "Mr. Update"}),
+    )
+    user_id = response.json()["id"]
+
+    response = test_app_with_db.put(
+        f"/api/v1/users/{user_id}/",
+        content=json.dumps({"name": "Mr. Updated"}),
+    )
+    assert response.status_code == 200
+    assert response.json()["name"] == "Mr. Updated"
+
+
+def test_update_user_incorrect_id(test_app_with_db):
+    response = test_app_with_db.put(
+        "/api/v1/users/62e3cb01-347e-4ca8-9c6c-ca47eb673609/",
+        content=json.dumps({"name": "Mr. Updated"}),
+    )
+    assert response.status_code == 404
+    assert response.json()["detail"] == "User not found"
