@@ -48,8 +48,7 @@ class User(Base):
     @classmethod
     async def get(cls, db, id) -> "User":
         query = sql.select(cls).where(cls.id == id)
-        users = await db.execute(query)
-        (user,) = users.first()
+        user = await db.scalar(query)
         return user
 
     @classmethod

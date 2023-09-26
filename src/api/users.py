@@ -1,6 +1,6 @@
 from typing import List
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 
 from src.models import User
 from src.database import db
@@ -39,5 +39,9 @@ async def update(
 
 
 @router.delete("/{id}")
-async def delete_user(id: str, db_session=Depends(db.get_db)) -> bool:
-    return await User.delete(db_session, id)
+async def delete_user(id: str, db_session=Depends(db.get_db)):
+    user = await User.get(db_session, id)
+    if user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+    await User.delete(db_session, id)
+    return {"message": f"User id: {user.id:.5}... deleted successfully"}

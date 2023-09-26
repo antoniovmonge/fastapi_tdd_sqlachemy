@@ -44,3 +44,17 @@ def test_get_user(test_app_with_db):
 
     assert response_dict["id"] == user_id
     assert response_dict["name"] == "Blas"
+
+
+def test_remove_user(test_app_with_db):
+    response = test_app_with_db.post(
+        "/api/v1/users/",
+        content=json.dumps({"name": "Mr. Delete"}),
+    )
+    user_id = response.json()["id"]
+
+    response = test_app_with_db.delete(f"/api/v1/users/{user_id}/")
+    assert response.status_code == 200
+    assert response.json() == {
+        "message": f"User id: {user_id:.5}... deleted successfully"
+    }
