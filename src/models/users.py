@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 from uuid import uuid4
 
 from sqlalchemy import Column, DateTime, String
@@ -46,7 +47,7 @@ class User(Base):
         return users.first()
 
     @classmethod
-    async def get(cls, db, id) -> "User":
+    async def get(cls, db, id) -> Optional["User"]:
         query = sql.select(cls).where(cls.id == id)
         user = await db.scalar(query)
         return user

@@ -46,6 +46,12 @@ def test_get_user(test_app_with_db):
     assert response_dict["name"] == "Blas"
 
 
+def test_get_user_incorrect_id(test_app_with_db):
+    response = test_app_with_db.get("/api/v1/users/62e3cb01-347e-4ca8-9c6c-ca47eb673609/")
+    assert response.status_code == 404
+    assert response.json()["detail"] == "User not found"
+
+
 def test_remove_user(test_app_with_db):
     response = test_app_with_db.post(
         "/api/v1/users/",

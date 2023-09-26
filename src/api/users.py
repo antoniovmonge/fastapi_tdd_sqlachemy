@@ -21,6 +21,8 @@ async def create_user(
 @router.get("/{id}")
 async def get_user(id: str, db_session=Depends(db.get_db)) -> UserSerializer:
     user = await User.get(db_session, id)
+    if user is None:
+        raise HTTPException(status_code=404, detail="User not found")
     return user
 
 
