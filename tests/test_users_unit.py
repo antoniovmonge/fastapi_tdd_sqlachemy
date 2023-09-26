@@ -1,5 +1,7 @@
 import json
 
+# CREATE USER TESTS
+
 
 def test_create_user(test_app_with_db):
     response = test_app_with_db.post(
@@ -27,7 +29,27 @@ def test_create_user_invalid_json(test_app_with_db):
     }
 
 
-def test_get_user(test_app_with_db):
+# GET ALL USERS TESTS
+
+
+def test_read_all_users(test_app_with_db):
+    response = test_app_with_db.post(
+        "/api/v1/users/", content=json.dumps({"name": "Mr. Test List"})
+    )
+    assert response.status_code == 201
+
+    response = test_app_with_db.get("/api/v1/users/")
+    assert response.status_code == 200
+
+    response_list = response.json()
+
+    assert response_list[-1]["name"] == "Mr. Test List"
+
+
+# GET USER TESTS
+
+
+def test_read_user(test_app_with_db):
     # create a user for this test and store it in the response variable
     response = test_app_with_db.post(
         "/api/v1/users/",
@@ -46,10 +68,15 @@ def test_get_user(test_app_with_db):
     assert response_dict["name"] == "Blas"
 
 
-def test_get_user_incorrect_id(test_app_with_db):
-    response = test_app_with_db.get("/api/v1/users/62e3cb01-347e-4ca8-9c6c-ca47eb673609/")
+def test_read_user_incorrect_id(test_app_with_db):
+    response = test_app_with_db.get(
+        "/api/v1/users/62e3cb01-347e-4ca8-9c6c-ca47eb673609/"
+    )
     assert response.status_code == 404
     assert response.json()["detail"] == "User not found"
+
+
+# DELETE USER TESTS
 
 
 def test_remove_user(test_app_with_db):
@@ -64,3 +91,11 @@ def test_remove_user(test_app_with_db):
     assert response.json() == {
         "message": f"User id: {user_id:.5}... deleted successfully"
     }
+
+
+def test_remove_user_incorrect_id(test_app_with_db):
+    response = test_app_with_db.delete(
+        "/api/v1/users/62e3cb01-347e-4ca8-9c6c-ca47eb673609/"
+    )
+    assert response.status_code == 404
+    assert response.json()["detail"] == "User not found"
