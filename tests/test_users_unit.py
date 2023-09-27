@@ -29,7 +29,7 @@ def test_create_user_invalid_json(test_app_with_db):
     }
 
 
-# GET ALL USERS TESTS
+# READ ALL USERS TESTS
 
 
 def test_read_all_users(test_app_with_db):
@@ -46,7 +46,7 @@ def test_read_all_users(test_app_with_db):
     assert response_list[-1]["name"] == "Mr. Test List"
 
 
-# GET USER TESTS
+# READ SINGLE USER TESTS
 
 
 def test_read_user(test_app_with_db):
@@ -126,3 +126,28 @@ def test_update_user_incorrect_id(test_app_with_db):
     )
     assert response.status_code == 404
     assert response.json()["detail"] == "User not found"
+
+
+def test_update_user_invalid_json(test_app_with_db):
+    response = test_app_with_db.post(
+        "/api/v1/users/",
+        content=json.dumps({"name": "Mr. Update Invalid"}),
+    )
+    user_id = response.json()["id"]
+
+    response = test_app_with_db.put(
+        f"/api/v1/users/{user_id}/",
+        content=json.dumps({}),
+    )
+    assert response.status_code == 422
+    assert response.json() == {
+        "detail": [
+            {
+                "type": "missing",
+                "loc": ["body", "name"],
+                "msg": "Field required",
+                "input": {},
+                "url": "https://errors.pydantic.dev/2.3/v/missing",
+            }
+        ]
+    }
